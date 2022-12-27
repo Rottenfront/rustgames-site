@@ -57,7 +57,7 @@ async fn main() {
         .init();
 
     tokio::join!(
-        serve(todos::main(), 3000),
+        serve(app(), 3000),
     );
 }
 
@@ -119,7 +119,7 @@ pub fn app() -> Router {
                 }))
                 .timeout(Duration::from_secs(10))
                 .layer(TraceLayer::new_for_http())
-                .into_inner(),
+                .into_inner()
         )
         .with_state(db)
 }

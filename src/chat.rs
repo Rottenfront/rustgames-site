@@ -10,7 +10,6 @@ use axum::{
 use futures::{sink::SinkExt, stream::StreamExt};
 use std::{
     collections::HashSet,
-    net::SocketAddr,
     sync::{Arc, Mutex},
 };
 use tokio::sync::broadcast;
