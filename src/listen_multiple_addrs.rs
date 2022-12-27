@@ -13,7 +13,6 @@ use std::{
     task::{Context, Poll},
 };
 
-#[tokio::main]
 async fn main() {
     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
 

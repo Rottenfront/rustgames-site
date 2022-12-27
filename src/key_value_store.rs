@@ -30,8 +30,7 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -42,8 +41,7 @@ async fn main() {
 
     let shared_state = SharedState::default();
 
-    // Build our application by composing routes
-    let app = Router::new()
+    Router::new()
         .route(
             "/:key",
             // Add compression to `kv_get`
@@ -71,15 +69,7 @@ async fn main() {
                 .timeout(Duration::from_secs(10))
                 .layer(TraceLayer::new_for_http()),
         )
-        .with_state(Arc::clone(&shared_state));
-
-    // Run our app with hyper
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .with_state(Arc::clone(&shared_state))
 }
 
 type SharedState = Arc<RwLock<AppState>>;

@@ -8,11 +8,11 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::{net::SocketAddr, sync::Arc};
+use std::sync::Arc;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
 
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -25,19 +25,10 @@ async fn main() {
     // the live implementation or just a mock for testing.
     let user_repo = Arc::new(ExampleUserRepo) as DynUserRepo;
 
-    // Build our application with some routes
-    let app = Router::new()
+    Router::new()
         .route("/users/:id", get(users_show))
         .route("/users", post(users_create))
-        .with_state(user_repo);
-
-    // Run our application
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .with_state(user_repo)
 }
 
 /// Handler for `GET /users/:id`.

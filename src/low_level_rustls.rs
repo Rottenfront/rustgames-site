@@ -27,7 +27,6 @@ use tokio_rustls::{
 use tower::MakeService;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
         .with(

@@ -1,11 +1,3 @@
-//! Example JWT authorization/authentication.
-//!
-//! Run with
-//!
-//! ```not_rust
-//! JWT_SECRET=secret cargo run -p example-jwt
-//! ```
-
 use axum::{
     async_trait,
     extract::{FromRequestParts, TypedHeader},
@@ -53,8 +45,7 @@ static KEYS: Lazy<Keys> = Lazy::new(|| {
     Keys::new(secret.as_bytes())
 });
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -63,17 +54,9 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let app = Router::new()
+    Router::new()
         .route("/protected", get(protected))
-        .route("/authorize", post(authorize));
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .route("/authorize", post(authorize))
 }
 
 async fn protected(claims: Claims) -> Result<String, AuthError> {

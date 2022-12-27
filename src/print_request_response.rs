@@ -1,9 +1,3 @@
-//! Run with
-//!
-//! ```not_rust
-//! cd examples && cargo run -p example-print-request-response
-//! ```
-
 use axum::{
     body::{Body, Bytes},
     http::{Request, StatusCode},
@@ -12,11 +6,9 @@ use axum::{
     routing::post,
     Router,
 };
-use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -25,16 +17,9 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let app = Router::new()
+    Router::new()
         .route("/", post(|| async move { "Hello from `POST /`" }))
-        .layer(middleware::from_fn(print_request_response));
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .layer(middleware::from_fn(print_request_response))
 }
 
 async fn print_request_response(

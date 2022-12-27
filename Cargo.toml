@@ -37,7 +37,7 @@ tokio-rustls = "*"
 tokio-postgres = "*"
 tokio-tungstenite = "*"
 tokio-util = { version = "*", features = ["io"] }
-tower = { version = "*", features = ["util"] }
+tower = { version = "*", features = ["full"] }
 tower-http = { version = "*", features = ["full"] }
 # tower-http = { version = "*", features = ["add-extension", "auth", "compression-full", "fs", "limit", "trace"] }
 tower-layer = "*"

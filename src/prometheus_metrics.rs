@@ -1,12 +1,3 @@
-//! Someday tower-http will hopefully have a metrics middleware, until then you can track
-//! metrics like this.
-//!
-//! Run with
-//!
-//! ```not_rust
-//! cd examples && cargo run -p example-prometheus-metrics
-//! ```
-
 use axum::{
     extract::MatchedPath,
     http::Request,
@@ -18,65 +9,36 @@ use axum::{
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
 use std::{
     future::ready,
-    net::SocketAddr,
     time::{Duration, Instant},
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 fn metrics_app() -> Router {
-    let recorder_handle = setup_metrics_recorder();
-    Router::new().route("/metrics", get(move || ready(recorder_handle.render())))
-}
-
-fn main_app() -> Router {
-    Router::new()
-        .route("/fast", get(|| async {}))
-        .route(
-            "/slow",
-            get(|| async {
-                tokio::time::sleep(Duration::from_secs(1)).await;
-            }),
-        )
-        .route_layer(middleware::from_fn(track_metrics))
-}
-
-async fn start_main_server() {
-    let app = main_app();
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap()
-}
-
-async fn start_metrics_server() {
-    let app = metrics_app();
-
-    // NOTE: expose metrics enpoint on a different port
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3001));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap()
-}
-
-#[tokio::main]
-async fn main() {
     tracing_subscriber::registry()
         .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
+                tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "example_todos=debug,tower_http=debug".into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // The `/metrics` endpoint should not be publicly available. If behind a reverse proxy, this
-    // can be achieved by rejecting requests to `/metrics`. In this example, a second server is
-    // started on another port to expose `/metrics`.
-    let (_main_server, _metrics_server) = tokio::join!(start_main_server(), start_metrics_server());
+    let recorder_handle = setup_metrics_recorder();
+    Router::new().route("/metrics", get(move || ready(recorder_handle.render())))
+}
+
+fn main() -> Router {
+    tracing_subscriber::registry()
+        .with(
+                tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "example_todos=debug,tower_http=debug".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
+    Router::new()
+        .route("/fast", get(|| async {}))
+        .route("/slow", get(|| async { tokio::time::sleep(Duration::from_secs(1)).await }))
+        .route_layer(middleware::from_fn(track_metrics))
 }
 
 fn setup_metrics_recorder() -> PrometheusHandle {

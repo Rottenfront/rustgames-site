@@ -1,17 +1,3 @@
-//! Run with
-//!
-//! ```not_rust
-//! $ cargo run -p example-http-proxy
-//! ```
-//!
-//! In another terminal:
-//!
-//! ```not_rust
-//! $ curl -v -x "127.0.0.1:3000" https://tokio.rs
-//! ```
-//!
-//! Example is based on <https://github.com/hyperium/hyper/blob/master/examples/http_proxy.rs>
-
 use axum::{
     body::{self, Body},
     http::{Method, Request, StatusCode},
@@ -25,7 +11,6 @@ use tokio::net::TcpStream;
 use tower::{make::Shared, ServiceExt};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
         .with(

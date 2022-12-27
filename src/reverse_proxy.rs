@@ -18,20 +18,12 @@ use std::net::SocketAddr;
 
 type Client = hyper::client::Client<HttpConnector, Body>;
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tokio::spawn(server());
 
     let client = Client::new();
 
-    let app = Router::new().route("/", get(handler)).with_state(client);
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 4000));
-    println!("reverse proxy listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    Router::new().route("/", get(handler)).with_state(client)
 }
 
 async fn handler(State(client): State<Client>, mut req: Request<Body>) -> Response<Body> {

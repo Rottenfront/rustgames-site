@@ -8,15 +8,7 @@ use axum::{extract::Query, routing::get, Router};
 use serde::{de, Deserialize, Deserializer};
 use std::{fmt, str::FromStr};
 
-#[tokio::main]
-async fn main() {
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-        .serve(app().into_make_service())
-        .await
-        .unwrap();
-}
-
-fn app() -> Router {
+fn main() -> Router {
     Router::new().route("/", get(handler))
 }
 
