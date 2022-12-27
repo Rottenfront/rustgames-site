@@ -69,7 +69,6 @@ pub fn main() -> Router {
 // The query parameters for todos index
 #[derive(Debug, Deserialize, Default)]
 pub struct Pagination {
-    pub offset: Option<usize>,
     pub limit: Option<usize>,
 }
 
@@ -83,7 +82,6 @@ async fn todos_index(
 
     let todos = todos
         .values()
-        .skip(pagination.offset.unwrap_or(0))
         .take(pagination.limit.unwrap_or(usize::MAX))
         .cloned()
         .collect::<Vec<_>>();

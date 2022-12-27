@@ -4,44 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "*"
-askama = "*"
-async-session = "*"
-async-trait = "*"
-axum = { version = "*", features = ["headers", "multipart", "ws"] }
-axum-extra = { version = "*", features = ["spa"] }
-axum-server = { version = "*", features = ["tls-rustls"] }
-axum-macros = "*"
-bb8 = "*"
-bb8-postgres = "*"
-futures = "*"
-futures-executor = "*"
-futures-util = "*"
-headers = "*"
-http = "*"
-http-body = "*"
-hyper = { version = "*", features = ["full"] }
-jsonwebtoken = "*"
-metrics = "*"
-metrics-exporter-prometheus = "*"
-mime = "*"
-oauth2 = "*"
-reqwest = { version = "*", features = ["rustls-tls", "json"] }
-rustls-pemfile = "*"
+axum = "*"
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
-sqlx = { version = "*", features = ["runtime-tokio-rustls", "any", "postgres"] }
-thiserror = "*"
 tokio = { version = "*", features = ["full"] }
-tokio-rustls = "*"
-tokio-postgres = "*"
-tokio-tungstenite = "*"
-tokio-util = { version = "*", features = ["io"] }
-tower = { version = "*", features = ["full"] }
-tower-http = { version = "*", features = ["full"] }
-# tower-http = { version = "*", features = ["add-extension", "auth", "compression-full", "fs", "limit", "trace"] }
-tower-layer = "*"
-tracing = "*"
-tracing-subscriber = { version = "*", features = ["env-filter"] }
-validator = { version = "*", features = ["derive"] }
-uuid = { version = "*", features = ["serde", "v4"] }
+tower-http = { version = "*", features = ["cors"] }
