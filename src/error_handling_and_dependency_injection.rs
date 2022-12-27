@@ -1,12 +1,3 @@
-//! Example showing how to convert errors into responses and how one might do
-//! dependency injection using trait objects.
-//!
-//! Run with
-//!
-//! ```not_rust
-//! cd examples && cargo run -p example-error-handling-and-dependency-injection
-//! ```
-
 use axum::{
     async_trait,
     extract::{Path, State},
@@ -21,7 +12,6 @@ use std::{net::SocketAddr, sync::Arc};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
 
-#[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
         .with(

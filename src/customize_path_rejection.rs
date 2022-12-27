@@ -1,9 +1,3 @@
-//! Run with
-//!
-//! ```not_rust
-//! cd examples && cargo run -p example-customize-path-rejection
-//! ```
-
 use axum::{
     async_trait,
     extract::{path::ErrorKind, rejection::PathRejection, FromRequestParts},
@@ -13,11 +7,9 @@ use axum::{
     Router,
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -26,16 +18,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // build our application with a route
-    let app = Router::new().route("/users/:user_id/teams/:team_id", get(handler));
-
-    // run it
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    println!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    Router::new().route("/users/:user_id/teams/:team_id", get(handler))
 }
 
 async fn handler(Path(params): Path<Params>) -> impl IntoResponse {

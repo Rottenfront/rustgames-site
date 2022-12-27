@@ -1,11 +1,3 @@
-//! Example chat application.
-//!
-//! Run with
-//!
-//! ```not_rust
-//! cd examples && cargo run -p example-chat
-//! ```
-
 use axum::{
     extract::{
         ws::{Message, WebSocket, WebSocketUpgrade},
@@ -30,8 +22,7 @@ struct AppState {
     tx: broadcast::Sender<String>,
 }
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -45,17 +36,10 @@ async fn main() {
 
     let app_state = Arc::new(AppState { user_set, tx });
 
-    let app = Router::new()
+    Router::new()
         .route("/", get(index))
         .route("/websocket", get(websocket_handler))
-        .with_state(app_state);
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .with_state(app_state)
 }
 
 async fn websocket_handler(

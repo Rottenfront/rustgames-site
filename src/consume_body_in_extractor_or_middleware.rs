@@ -1,9 +1,3 @@
-//! Run with
-//!
-//! ```not_rust
-//! cd examples && cargo run -p example-consume-body-in-extractor-or-middleware
-//! ```
-
 use axum::{
     async_trait,
     body::{self, BoxBody, Bytes, Full},
@@ -14,13 +8,11 @@ use axum::{
     routing::post,
     Router,
 };
-use std::net::SocketAddr;
 use tower::ServiceBuilder;
 use tower_http::ServiceBuilderExt;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
-async fn main() {
+fn main() -> Router {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -29,18 +21,11 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let app = Router::new().route("/", post(handler)).layer(
+    Router::new().route("/", post(handler)).layer(
         ServiceBuilder::new()
             .map_request_body(body::boxed)
             .layer(middleware::from_fn(print_request_body)),
-    );
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    )
 }
 
 // middleware that shows how to consume the request body upfront
