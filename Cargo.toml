@@ -4,8 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "*"
 axum = "*"
 serde = { version = "*", features = ["derive"] }
-serde_json = "*"
 tokio = { version = "*", features = ["full"] }
-tower-http = { version = "*", features = ["cors"] }
+tower = { version = "*", features = ["full"] }
+tower-http = { version = "*", features = ["add-extension", "trace"] }
+tracing = "*"
+tracing-subscriber = { version = "*", features = ["env-filter"] }
+uuid = { version = "*", features = ["serde", "v4"] }
