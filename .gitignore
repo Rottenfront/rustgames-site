@@ -1,6 +1,7 @@
-/target/
-/.idea/
-/.fleet/
-/.vscode/
+target/
+.idea/
+.fleet/
+.vscode/
+.vs/
 
 Cargo.lock
