@@ -66,7 +66,7 @@ pub async fn get_description(
         &if todo.checked { "Done" } else { "Not yet Done" },
     );
 
-    Html(tera.render("description.html", &context).unwrap())
+    Html(tera.render("project_description.html", &context).unwrap())
 }
 
 pub async fn delete_all_done_todos(
@@ -118,14 +118,10 @@ pub struct NewTodo {
 }
 
 pub async fn editing_new_todo<'a>() -> Html<&'a str> {
-    Html(include_str!("../templates/new.html"))
+    Html(include_str!("../templates/project_new.html"))
 }
 
-pub async fn create_todo(
-        Form(todo): Form<NewTodo>,
-        cookies: Cookies,
-        Extension(pool): Extension<PgPool>,
-        ) -> impl IntoResponse {
+pub async fn create_todo(Form(todo): Form<NewTodo>, cookies: Cookies, Extension(pool): Extension<PgPool>) -> impl IntoResponse {
     sqlx::query!(
             "INSERT INTO todos(title, description, login) VALUES($1, $2, $3)",
         todo.title,
@@ -146,11 +142,7 @@ pub struct UpdatedTodo {
     checked: Option<String>,
 }
 
-pub async fn edit_todo(
-        Path(id): Path<u32>,
-        Extension(pool): Extension<PgPool>,
-        Extension(tera): Extension<Tera>,
-        ) -> Html<String> {
+pub async fn edit_todo(Path(id): Path<u32>, Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>) -> Html<String> {
     let todo = sqlx::query_as!(Todo, "SELECT * FROM todos WHERE id = $1", id as i32)
         .fetch_one(&pool)
         .await
@@ -159,14 +151,10 @@ pub async fn edit_todo(
     let mut context = Context::new();
     context.insert("todo", &todo);
 
-    Html(tera.render("edit.html", &context).unwrap())
+    Html(tera.render("projects_edit.html", &context).unwrap())
 }
 
-pub async fn update_todo(
-        Path(id): Path<u32>,
-        Form(new_content): Form<UpdatedTodo>,
-        Extension(pool): Extension<PgPool>,
-        ) -> impl IntoResponse {
+pub async fn update_todo(Path(id): Path<u32>, Form(new_content): Form<UpdatedTodo>, Extension(pool): Extension<PgPool>) -> impl IntoResponse {
     sqlx::query!("UPDATE todos SET title = $1, description = $2, checked = $3 WHERE id = $4",
         new_content.title,
         new_content.description,
@@ -179,3 +167,19 @@ pub async fn update_todo(
 
     Redirect::to(Uri::from_static("/"))
 }
+
+
+
+pub async fn all_blogs_list(cookies: Cookies, Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>) -> Html<String> {}
+
+pub async fn blog_new(cookies: Cookies, Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>) -> Html<String> {}
+
+pub async fn blog_create(cookies: Cookies, Form(todo): Form<NewTodo>, Extension(pool): Extension<PgPool>) -> impl IntoResponse {}
+
+pub async fn blog_edit(cookies: Cookies, Path(id): Path<u32>, Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>) -> Html<String> {}
+
+pub async fn blog_update(cookies: Cookies, Path(id): Path<u32>, Form(new_content): Form<UpdatedTodo>, Extension(pool): Extension<PgPool>) -> impl IntoResponse {}
+
+pub async fn blog_get(cookies: Cookies, Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>) -> Html<String> {}
+
+pub async fn blog_delete(cookies: Cookies, Path(id): Path<u32>, Extension(pool): Extension<PgPool>) -> impl IntoResponse {}

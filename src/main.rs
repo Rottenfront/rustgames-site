@@ -1,14 +1,19 @@
 mod blogs;
 mod login;
 mod projects;
+mod static_pages;
+mod common;
 
+use blogs::*;
 use login::*;
+use projects::*;
 
 use axum::{
     extract::Extension,
     http::uri::Uri,
     response::IntoResponse,
-    routing::{get, post},
+    routing::get,
+    Router
 };
 use sqlx::PgPool;
 use tera::Tera;
@@ -18,20 +23,35 @@ use tower_cookies::{Cookie, CookieManagerLayer};
 async fn main() {
     let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "postgres://postgres:1597@localhost:3000/postgres".to_string());
     let pool = PgPool::connect(&db_url).await.unwrap();
-    let tera = Tera::new("templates/*/*.html").unwrap();
+    let tera = Tera::new("assets/*.html").unwrap();
 
-    let app = axum::Router::new()
-        .route("/", get(list_todos))
-        .route("/login", get(login_into_account))
+    let app = Router::new()
+        // Home section
+        .route("/", get(static_pages::index))
+        .route("/about", get(static_pages::about))
+        .route("/search/:id", get(static_pages::search))
+
+        // Login section
+        .route("/login",    get(login_page).post(login_into_account))
         .route("/register", get(register_page).post(register))
-        .route("/logout", get(logout))
-        .route("/new", get(editing_new_todo).post(create_todo))
-        .route("/edit/:id", get(edit_todo).post(update_todo))
-        .route("/:id", post(delete_todo).get(get_description))
-        .route("/reset", get(delete_all_todos).post(delete_all_done_todos))
+        .route("/logout",   get(logout))
+
+        // Projects section
+        .route("/projects",     get(all_projects_list))
+        .route("/project/new",  get(project_new).post(project_create))
+        .route("/project/:id",  get(project_get).post(project_delete).patch(project_update))
+
+        // Blogs section
+        .route("/blogs",    get(all_blogs_list))
+        .route("/blog/new", get(blog_new).post(blog_create))
+        .route("/blog/:id", get(blog_get).post(blog_delete).patch(blog_update))
+
+        // Extensions section
         .layer(Extension(pool))
+        .layer(Extension(tera))
         .layer(CookieManagerLayer::new())
-        .layer(Extension(tera));
+
+        .fallback(static_pages::handler_404);
 
     let address = std::net::SocketAddr::from(([127, 0, 0, 1], 8000));
     axum::Server::bind(&address)

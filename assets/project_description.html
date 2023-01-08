@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Description</title>
+</head>
+<body>
+    <h1>Project</h1>
+    <p>Title: {{ title }}</p>
+    <p>Description: {{ description }}</p>
+    <form action="/{{ id }}" method="post">
+        <div>
+            <input type="submit" value="Delete project">
+        </div>
+    </form>
+    <form action="/project/{{ project.id }}" method="patch">
+        <div>
+            <input type="text" placeholder="Enter title" name="title" value="{{ project.title }}" id="title" autofocus required />
+            <input type="text" placeholder="Enter description" name="description" value="{{ project.description }}" id="description" autofocus required />
+            <input type="checkbox" placeholder="Checked" name="checked" value="" id="checked" autofocus />
+        </div>
+        <div>
+            <div>
+                <input type="submit" value="Update"/>
+            </div>
+            <div>
+                <a href="/{{ project.id }}">
+                    <input type="button" value="Cancel"/>
+                </a>
+            </div>
+        </div>
+    </form>
+    <div>
+        <a href="/"><input type="button" value="Back"></a>
+    </div>
+</body>
+</html>

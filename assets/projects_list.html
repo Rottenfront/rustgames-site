@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of projects - RustGames</title>
+</head>
+<body>
+    <p>All projects</p>
+    {% for project in projects %}
+        <div class="card">
+            <h6><a href="/{{ project.id }}">{{ project.title }}</a></h6>
+            <p>Description: {{ project.description }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,17 @@
+<form action="/register" method="POST">
+    <div>
+        <label for="login">
+            <input type="text" placeholder="Enter Login" name="login" value="" id="login" autofocus required />
+        </label>
+        <label for="password">
+            <input type="password" placeholder="Enter Password" name="password" value="" id="password" autofocus required />
+        </label>
+        <input type="submit" value="Register" />
+    </div>
+    <div>
+        <a href="/">
+            <input type="button" value="Back to Login" />
+        </a>
+    </div>
+</form>
+<p>{{ is_already_exists_account }}</p>

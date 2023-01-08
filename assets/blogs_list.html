@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of blogs - RustGames</title>
+</head>
+<body>
+{{ header }}
+    <p>All blogs</p>
+    {% for blog in blogs %}
+        <div class="card">
+            <h6><a href="/{{ blog.id }}">{{ blog.title }}</a></h6>
+            <p>Description: {{ blog.description }}</p>
+        </div>
+    {% endfor %}
+{{ footer }}
+</body>
+</html>

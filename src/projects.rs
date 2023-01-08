@@ -1,4 +1,4 @@
-use crate::{Cookie, IntoResponse, PgPool, Uri};
+use crate::{IntoResponse, PgPool};
 use axum::extract::{Extension, Form, Path};
 use axum::response::{Html, Redirect};
 use serde::{Deserialize, Serialize};
@@ -12,20 +12,6 @@ pub struct Todo {
     description: String,
     checked: bool,
     login: String,
-}
-
-pub async fn list_projects(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
-    let username = cookies.get("login").unwrap().value().to_string();
-    let todos = sqlx::query_as!(Todo, "SELECT * FROM projects")
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-
-    let mut context = Context::new();
-    context.insert("todos", &todos);
-    context.insert("account", &username);
-
-    Html(tera.render("index.html", &context).unwrap())
 }
 
 pub async fn get_description(
@@ -47,37 +33,7 @@ pub async fn get_description(
         &if todo.checked { "Done" } else { "Not yet Done" },
     );
 
-    Html(tera.render("description.html", &context).unwrap())
-}
-
-pub async fn delete_all_done_todos(
-        cookies: Cookies,
-        Extension(pool): Extension<PgPool>,
-        ) -> impl IntoResponse {
-    sqlx::query!(
-            "DELETE FROM todos WHERE checked = true AND login = $1",
-        cookies.get("login").unwrap().value().to_string()
-    )
-    .execute(&pool)
-    .await
-    .unwrap();
-
-    Redirect::to(Uri::from_static("/"))
-}
-
-pub async fn delete_all_todos(
-        cookies: Cookies,
-        Extension(pool): Extension<PgPool>,
-        ) -> impl IntoResponse {
-    sqlx::query!(
-            "DELETE FROM todos WHERE login = $1",
-        cookies.get("login").unwrap().value().to_string()
-    )
-    .execute(&pool)
-    .await
-    .unwrap();
-
-    Redirect::to(Uri::from_static("/"))
+    Html(tera.render("project_description.html", &context).unwrap())
 }
 
 pub async fn delete_todo(
@@ -89,7 +45,7 @@ pub async fn delete_todo(
         .await
         .unwrap();
 
-    Redirect::to(Uri::from_static("/"))
+    Redirect::to("/")
 }
 
 #[derive(Deserialize)]
@@ -99,7 +55,7 @@ pub struct NewTodo {
 }
 
 pub async fn editing_new_todo<'a>() -> Html<&'a str> {
-    Html(include_str!("../templates/new.html"))
+    Html(include_str!("../templates/project_new.html"))
 }
 
 pub async fn create_todo(
@@ -117,7 +73,7 @@ pub async fn create_todo(
     .await
     .unwrap();
 
-    Redirect::to(Uri::from_static("/"))
+    Redirect::to("/")
 }
 
 #[derive(Deserialize)]
@@ -140,7 +96,7 @@ pub async fn edit_todo(
     let mut context = Context::new();
     context.insert("todo", &todo);
 
-    Html(tera.render("edit.html", &context).unwrap())
+    Html(tera.render("projects_edit.html", &context).unwrap())
 }
 
 pub async fn update_todo(
@@ -159,5 +115,38 @@ pub async fn update_todo(
     .await
     .unwrap();
 
-    Redirect::to(Uri::from_static("/"))
+    Redirect::to(&format!("/blog/{id}"))
+}
+
+
+pub async fn all_projects_list(Extension(pool): Extension<PgPool>,
+                               Extension(tera): Extension<Tera>) -> Html<String> {
+    let projects = sqlx::query_as!(Project, "SELECT * FROM projects")
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+
+    let mut context = Context::new();
+    context.insert("projects", &projects);
+    let mut ctx = Context::new();
+    ctx.insert("body", &tera.render("projects_list.html", &context).unwrap());
+    Html(tera.render("static.html", &ctx).unwrap())
+}
+pub async fn project_new(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
+
+}
+pub async fn project_create(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
+
+}
+pub async fn project_edit(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
+
+}
+pub async fn project_update(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
+
+}
+pub async fn project_get(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
+
+}
+pub async fn project_delete(Extension(pool): Extension<PgPool>, Extension(tera): Extension<Tera>, cookies: Cookies) -> Html<String> {
+
 }

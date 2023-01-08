@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+
+<header id="site-header" role="banner">
+    <div class="site-header__inner">
+        <div class="site-logo">
+
+        </div>
+
+        <nav id="navigation">
+            <div class="site-navigation">
+                <div>
+                    <ul class="main-nav">
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+
+{{ page_body }}
+
+<footer class="site-footer" role="contentinfo">
+    <div class="wrapper d-xl-flex flex-justify-between flex-items-center">
+        <div class="site-logo">
+
+        </div>
+
+        <ul>
+            <li>
+                <p>© <span id="year"></span> The RustGameDev community</p>
+            </li>
+        </ul>
+    </div>
+    <script>
+        const date = new Date().getFullYear(),
+            year = document.getElementById('year');
+        if (year) {
+            document.getElementById('year').innerHTML = date.toString();
+        }
+    </script>
+</footer>
+
+</body>
+</html>

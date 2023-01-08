@@ -1,7 +1,11 @@
-target/
+# Editors' folders
 .idea/
 .fleet/
 .vscode/
 .vs/
 
+# Compiled files
+target/
+
+# Locker
 Cargo.lock

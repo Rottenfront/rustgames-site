@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Description</title>
+</head>
+<body>
+    <h1>TODO</h1>
+    <p>Title: {{ title }}</p>
+    <p>Description: {{ description }}</p>
+    <p>Checked: {{ checked }}</p>
+    <form action="/{{ id }}" method="POST">
+        <div>
+            <input type="submit" value="Delete Todo">
+        </div>
+    </form>
+    <div>
+        <a href="/"><input type="button" value="Back"></a>
+    </div>
+    <form action="/edit/{{ todo.id }}" method="POST">
+        <div>
+            <input
+                    type="text"
+                    placeholder="Enter title"
+                    name="title"
+                    value="{{ todo.title }}"
+                    id="title"
+                    autofocus
+                    required
+            >
+            <input
+                    type="text"
+                    placeholder="Enter description"
+                    name="description"
+                    value="{{ todo.description }}"
+                    id="description"
+                    autofocus
+                    required
+            >
+            <input
+                    type="checkbox"
+                    placeholder="Checked"
+                    name="checked"
+                    value=""
+                    id="checked"
+                    autofocus
+            >
+        </div>
+        <div>
+            <div>
+                <input type="submit" value="Update"/>
+            </div>
+            <div>
+                <a href="/">
+                    <input type="button" value="Cancel"/>
+                </a>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

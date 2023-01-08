@@ -1,6 +1,8 @@
 use crate::{Cookie, IntoResponse, PgPool, Uri};
-use axum::extract::{Extension, Form};
-use axum::response::{Html, Redirect};
+use axum::{
+    extract::{Extension, Form},
+    response::{Html, Redirect}
+};
 use serde::Deserialize;
 use tera::{Context, Tera};
 use tower_cookies::Cookies;
@@ -11,6 +13,10 @@ const IS_ALREADY_EXISTS_ACCOUNT: &str = "Is already exists account with this log
 pub struct Account {
     login: String,
     password: String,
+}
+
+pub async fn login_page(Extension(tera): Extension<Tera>) -> Html<String> {
+    Html(tera.render("login.html", &Context::new()).unwrap())
 }
 
 pub async fn login_into_account(
@@ -27,7 +33,7 @@ pub async fn login_into_account(
         cookies.add(Cookie::new("password", account.password));
     }
 
-    Redirect::to(Uri::from_static("/"))
+    Redirect::to("/")
 }
 
 pub async fn register_page(Extension(tera): Extension<Tera>) -> Html<String> {
@@ -65,7 +71,7 @@ pub async fn register(
             cookies.add(Cookie::new("login", new_account.login));
             cookies.add(Cookie::new("password", new_account.password));
 
-            Redirect::to(Uri::from_static("/")).into_response()
+            Redirect::to("/").into_response()
         }
         _ => {
             let mut context = Context::new();
@@ -80,5 +86,5 @@ pub async fn logout(cookies: Cookies) -> impl IntoResponse {
     cookies.add(Cookie::new("login", String::new()));
     cookies.add(Cookie::new("password", String::new()));
 
-    Redirect::to(Uri::from_static("/"))
+    Redirect::to("/").into_response()
 }
